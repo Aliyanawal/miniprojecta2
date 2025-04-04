@@ -1,38 +1,42 @@
-from dotenv import load_dotenv
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+import requests
 import os
-import google.generativeai as genai
 
-# Load environment variables
-load_dotenv()
+app = Flask(__name__)
+CORS(app, resources={r"/chat": {"origins": "*"}})  # Enable CORS for frontend
+
+# Load API Key
 api_key = os.getenv("GEMINI_API_KEY")
 if not api_key:
-    raise ValueError("API key not found!")
+    raise ValueError("API key not found! Make sure it's set in the environment variables.")
 
-# Configure Gemini
-genai.configure(api_key=api_key)
+# Define API URL
+MODEL_NAME = "gemini-1.5-pro-002"  # ✅ Use a valid model name
+url = f"https://generativelanguage.googleapis.com/v1/models/{MODEL_NAME}:generateContent?key={api_key}"
 
-# Initialize correct model (no "models/" prefix)
-model = genai.GenerativeModel('gemini-pro')
-
-def chat_with_gemini(prompt):
+@app.route('/chat', methods=['POST'])
+def chat():
     try:
-        response = model.generate_content(prompt)
-        return response.text if hasattr(response, 'text') else str(response)
+        user_input = request.json.get("message")
+        if not user_input:
+            return jsonify({"error": "Message is required"}), 400
+        
+        # Prepare API request
+        headers = {"Content-Type": "application/json"}
+        data = {"contents": [{"parts": [{"text": user_input}]}]}
+        
+        # Make API call
+        response = requests.post(url, headers=headers, json=data)
+        response_json = response.json()
+
+        # Extract response text
+        bot_response = response_json.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "Error: No response from AI.")
+        
+        return jsonify({"response": bot_response})
+
     except Exception as e:
-        return f"An error occurred: {e}"
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
 
-def main():
-    print("Welcome to the Gemini Chatbot! Type 'exit' to quit.")
-    while True:
-        user_input = input("You: ")
-        if user_input.lower() == 'exit':
-            print("Goodbye!")
-            break
-        if not user_input.strip():
-            print("Please enter something!")
-            continue
-        response = chat_with_gemini(user_input)
-        print("Gemini:", response)
-
-if __name__ == "__main__":
-    main()
+if __name__ == '__main__':
+    app.run(debug=True)

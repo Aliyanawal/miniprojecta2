@@ -1,32 +1,76 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>PixScribe</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .chat-container {
+            width: 300px;
+            margin: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .messages {
+            height: 200px;
+            overflow-y: auto;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+            padding: 5px;
+            text-align: left;
+        }
+        .message {
+            margin: 5px 0;
+        }
+        .bot {
+            color: blue;
+        }
+        .user {
+            color: green;
+        }
+    </style>
 </head>
 <body>
-    <h2>Enter a prompt</h2>
-    <input type="text" id="promptInput" placeholder="Describe your image">
-    <button onclick="generateImage()">Generate</button>
-    <br><br>
-    <img id="outputImage" style="max-width: 500px; display: none;">
+
+    <h1>Chatbot</h1>
+    <div class="chat-container">
+        <div class="messages" id="messages"></div>
+        <input type="text" id="userInput" placeholder="Type a message..." />
+        <button onclick="sendMessage()">Send</button>
+    </div>
 
     <script>
-        async function generateImage() {
-            const prompt = document.getElementById("promptInput").value;
-            const response = await fetch("http://127.0.0.1:5001/generate", {
+        function sendMessage() {
+            let userInput = document.getElementById("userInput").value;
+            if (!userInput.trim()) return;
+
+            // Display user message
+            let messagesDiv = document.getElementById("messages");
+            messagesDiv.innerHTML += `<div class="message user"><b>You:</b> ${userInput}</div>`;
+            document.getElementById("userInput").value = "";
+
+            // Send message to backend
+            fetch("http://127.0.0.1:5000/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ prompt: prompt })
+                body: JSON.stringify({ message: userInput })
+            })
+            .then(response => response.json())
+            .then(data => {
+                let botResponse = data.response || "Error: No response from chatbot.";
+                messagesDiv.innerHTML += `<div class="message bot"><b>Bot:</b> ${botResponse}</div>`;
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            })
+            .catch(error => {
+                messagesDiv.innerHTML += `<div class="message bot"><b>Bot:</b> Error connecting to chatbot.</div>`;
             });
-
-            const data = await response.json();
-            if (data.image_url) {
-                document.getElementById("outputImage").src = data.image_url;
-                document.getElementById("outputImage").style.display = "block";
-            } else {
-                alert("Error: " + data.error);
-            }
         }
     </script>
+
 </body>
 </html>

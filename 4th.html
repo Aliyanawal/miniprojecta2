@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixScribe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #ff40bd;
+            margin: 0;
+            padding: 50px;
+        }
+        h1 {
+            font-family: 'Press Start 2P', cursive;
+            color: yellow;
+            font-size: 50px;
+        }
+        input {
+            width: 60%;
+            padding: 12px;
+            font-size: 18px;
+            border: 2px solid yellow;
+            border-radius: 8px;
+            outline: none;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: yellow;
+            color: black;
+            border: none;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background-color: orange;
+        }
+        img {
+    margin-top: 20px;
+    max-width: 80%;
+    border-radius: 10px;
+    display: none;
+    border: 3px solid yellow;
+    
+    /* Centering the image */
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+             }
+
+        #loading {
+            font-size: 20px;
+            font-weight: bold;
+            color: yellow;
+            display: none;
+        }
+        #error {
+            font-size: 18px;
+            color: red;
+            display: none;
+            margin-top: 15px;
+        }
+        #downloadBtn {
+            display: none;
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #00ff00;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        #downloadBtn:hover {
+            background-color: #00cc00;
+        }
+    </style>
+</head>
+<body>
+    <h1>PixScribe</h1>
+    <input type="text" id="prompt" placeholder="Enter a description...">
+    <br>
+    <button onclick="generateImage()" id="generateBtn">Generate</button>
+    <p id="loading">🔄 Generating image... Please wait.</p>
+    <p id="error"></p>
+    <br>
+    <img id="generatedImage" src="">
+    <br>
+    <a id="downloadBtn" download="pixscribe_image.png">Download Image</a>
+
+    <script>
+        function generateImage() {
+            const prompt = document.getElementById("prompt").value;
+            const generatedImage = document.getElementById("generatedImage");
+            const loadingText = document.getElementById("loading");
+            const errorText = document.getElementById("error");
+            const generateBtn = document.getElementById("generateBtn");
+            const downloadBtn = document.getElementById("downloadBtn");
+
+            if (!prompt.trim()) {
+                errorText.innerText = "⚠️ Please enter a description!";
+                errorText.style.display = "block";
+                return;
+            }
+
+            // Reset UI
+            generatedImage.style.display = "none";
+            errorText.style.display = "none";
+            downloadBtn.style.display = "none";
+
+            // Show loading text & disable button
+            loadingText.style.display = "block";
+            generateBtn.innerText = "Generating...";
+            generateBtn.disabled = true;
+
+            fetch("http://127.0.0.1:5001/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: prompt })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Generated image URL:", data.image_url);
+
+                if (data.image_url) {
+                    generatedImage.src = data.image_url;
+                    generatedImage.style.display = "block";
+
+                    // Set download link
+                    downloadBtn.href = data.image_url;
+                    downloadBtn.style.display = "inline-block";
+                } else {
+                    errorText.innerText = "⚠️ " + data.error;
+                    errorText.style.display = "block";
+                }
+            })
+            .catch(error => {
+                errorText.innerText = "❌ Failed to connect to server!";
+                errorText.style.display = "block";
+                console.error("Error:", error);
+            })
+            .finally(() => {
+                loadingText.style.display = "none";
+                generateBtn.innerText = "Generate";
+                generateBtn.disabled = false;
+            });
+        }
+    </script>
+</body>
+</html>

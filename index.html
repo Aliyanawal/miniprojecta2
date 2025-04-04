@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PixScribe</title>
+</head>
+<body>
+    <h2>Enter a prompt</h2>
+    <input type="text" id="promptInput" placeholder="Describe your image">
+    <button onclick="generateImage()">Generate</button>
+    <br><br>
+    <img id="outputImage" style="max-width: 500px; display: none;">
+
+    <script>
+        async function generateImage() {
+            const prompt = document.getElementById("promptInput").value;
+            const response = await fetch("http://127.0.0.1:5001/generate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            const data = await response.json();
+            if (data.image_url) {
+                document.getElementById("outputImage").src = data.image_url;
+                document.getElementById("outputImage").style.display = "block";
+            } else {
+                alert("Error: " + data.error);
+            }
+        }
+    </script>
+</body>
+</html>

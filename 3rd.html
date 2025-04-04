@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixscribe - Image Upload</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #ff40bd;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: center;
+        }
+
+        .header {
+            position: absolute;
+            top: 50px;
+            font-size: 50px;
+            font-family: 'Press Start 2P', cursive;
+            color: yellow;
+        }
+
+        .upload-container {
+            background-color: white;
+            width: 350px;
+            height: 300px;
+            border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .upload-placeholder img {
+            width: 80px;
+        }
+
+        .upload-placeholder p {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: black;
+        }
+
+        #preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 20px;
+            display: none;
+            position: absolute;
+        }
+
+        input[type="file"] {
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+        }
+
+        .button {
+            margin-top: 20px;
+            background-color: white;
+            color: black;
+            font-size: 25px;
+            font-weight: bold;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            border: none;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            text-transform: uppercase;
+        }
+
+        #processing-message {
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: none; /* Initially hidden */
+            color: yellow;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">PIXSCRIBE</div>
+
+    <div class="upload-container">
+        <div class="upload-placeholder" id="upload-placeholder">
+            <img src="img2.jpg" alt="Upload Icon">
+            <p>add image</p>
+        </div>
+        <input type="file" id="fileInput" accept="image/*" onchange="previewImage(event)">
+        <img id="preview" alt="Uploaded Image">
+    </div>
+
+    <button class="button" id="describeBtn">Describe</button>
+    <p id="processing-message">Processing image... Please wait.</p> <!-- Processing Message -->
+
+    <script>
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('preview').src = e.target.result;
+                    document.getElementById('preview').style.display = 'block';
+                    document.getElementById('upload-placeholder').style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        document.getElementById('describeBtn').addEventListener('click', async function () {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const processingMessage = document.getElementById("processing-message");
+
+            if (!file) {
+                alert("Please upload an image first.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Show Processing Message and Disable Button
+            const describeBtn = document.getElementById("describeBtn");
+            describeBtn.innerText = "Processing...";
+            describeBtn.disabled = true;
+            processingMessage.style.display = "block"; // Show "Processing..." text
+
+            try {
+                const response = await fetch("http://127.0.0.1:5000/upload", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                if (data.description) {
+                    alert("Image Description: " + data.description);
+                } else {
+                    alert("Error: " + data.error);
+                }
+            } catch (error) {
+                alert("Failed to connect to the server.");
+                console.error(error);
+            }
+
+            // Reset Button and Hide Processing Message After Response
+            describeBtn.innerText = "Describe";
+            describeBtn.disabled = false;
+            processingMessage.style.display = "none"; // Hide "Processing..." text
+        });
+    </script>
+
+</body>
+</html>

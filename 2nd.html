@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixscribe - Next Page</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: sans-serif;
+            background-color: #ff40bd;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: center;
+        }
+
+        .header {
+            position: absolute;
+            top: 50px;
+            left: 80px;
+            font-size: 50px;
+            font-family: 'Press Start 2P', cursive;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: yellow;
+        }
+
+        .cards {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 80%;
+            margin-top: 100px;
+            flex-wrap: nowrap;
+        }
+
+        .card {
+            background-color: white;
+            width: 279px;
+            height: 453px;
+            border-radius: 20px;
+            box-shadow: 4px 4px 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+
+        .card img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .card p {
+            font-size: 26px;
+            font-weight: bold;
+            color: #8a2be2;
+            text-transform: lowercase;
+        }
+
+        .card .arrow {
+            font-size: 35px;
+            color: #8a2be2;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            transform: scale(1.1);
+        }
+
+        .card:active {
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 900px) {
+            .cards {
+                flex-wrap: wrap;
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">PIXSCRIBE</div>
+
+    <div class="cards">
+        <!-- Pic to Text Card -->
+        <a href="3rd.html" style="text-decoration: none;">
+            <div class="card">
+                <img src="img2.jpg" alt="Pic to Text">
+                <p>pic to text</p>
+                <div class="arrow">➜</div>
+            </div>
+        </a>
+
+        <!-- Text to Pic Card -->
+        <a href="5th.html" style="text-decoration: none;">
+        <div class="card">
+            <img src="txt.png" alt="Text to Pic">
+            <p>text to pic</p>
+            <div class="arrow">➜</div>
+        </div>
+        </a>
+        
+
+        <!-- Models Card -->
+        <a href="4th.html" style="text-decoration: none;">
+        <div class="card">
+            <img src="modl.webp" alt="Models">
+            <p>models</p>
+            <div class="arrow">➜</div>
+        </div>
+    </div>
+    </a>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pixscribe Landing Page</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: sans-serif;
+      background-color: #ff40bd;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Pixscribe Title Styling */
+    .header {
+      position: absolute;
+      top: 60px;
+      left: 80px;
+      font-size: 50px;
+      font-family: 'Press Start 2P', cursive;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: yellow;
+    }
+
+    /* Main Content Layout */
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* Hero Section */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      text-align: left;
+      padding: 120px 50px 50px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: 50px;
+      flex: 1;
+      opacity: 0;
+      transition: opacity 0.8s ease-in;
+    }
+
+    .hero-content p {
+      font-size: 18px;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    /* Try Now Button */
+    .hero-content a button {
+      background-color: white;
+      color: black;
+      border: none;
+      padding: 12px 35px;
+      font-size: 1em;
+      border-radius: 30px;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: normal;
+      display: inline-block;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+      opacity: 0;
+      transition: opacity 0.8s ease-in, transform 0.2s;
+    }
+
+    .hero-content a button:hover {
+      transform: scale(1.1);
+    }
+
+    /* Gallery Section - 50% of Screen */
+    .gallery {
+      display: flex;
+      width: 100%;
+      height: 50vh;
+      overflow: hidden;
+    }
+
+    .gallery img {
+      width: 25%;
+      height: 100%;
+      object-fit: cover;
+      transform: translateY(100px); /* Start below */
+      opacity: 0; /* Initially hidden */
+    }
+
+    /* Roll-Up Animation (one-by-one delay) */
+    @keyframes rollUp {
+      0% {
+        transform: translateY(100px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="header">PIXSCRIBE</div>
+
+  <div class="container">
+    <div class="hero" id="hero">
+      <div class="hero-content">
+        <p>Transforming thoughts into great visuals with the limitless potential of generative AI—pushing the boundaries of what's possible to bring your ideas to life like never before.</p>
+        <a href="2nd.html"><button id="button">try now</button></a>
+      </div>
+    </div>
+
+    <div class="gallery">
+      <img src="jelly.jpg" alt="Jelly" class="gallery-img" style="animation-delay: 0.1s;">
+      <img src="wine1.jpg" alt="Wine" class="gallery-img" style="animation-delay: 0.35s;">
+      <img src="food1.jpg" alt="Food" class="gallery-img" style="animation-delay: 0.6s;">
+      <img src="girl1.jpg" alt="Girl" class="gallery-img" style="animation-delay: 0.85s;">
+    </div>
+  </div>
+
+  <script>
+    // Function to animate images one by one
+    document.addEventListener("DOMContentLoaded", () => {
+      const images = document.querySelectorAll(".gallery-img");
+
+      images.forEach((img, index) => {
+        setTimeout(() => {
+          img.style.animation = "rollUp 0.8s ease-out forwards";
+        }, index * 400); // Faster delay (250ms instead of 400ms)
+      });
+
+      // Show text & button after images roll up
+      setTimeout(() => {
+        document.getElementById("hero").style.opacity = "1";
+        setTimeout(() => {
+          document.getElementById("button").style.opacity = "1";
+        }, 500); // Text & button appear sooner
+      }, images.length * 250 + 700);
+    });
+  </script>
+
+</body>
+</html>
